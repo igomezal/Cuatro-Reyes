@@ -23,6 +23,7 @@ public class Movimiento {
         this.color = color;
         this.origen = origen;
         this.destino = destino;
+        //Sergio es mazo pero mazo de gay
     }
 
     public String getColor() {
