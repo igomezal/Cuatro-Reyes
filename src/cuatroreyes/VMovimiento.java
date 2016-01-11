@@ -12,6 +12,9 @@ import akka.actor.ActorRef;
  * @author Ivan
  */
 public class VMovimiento {
+    //Clase para repetir un movimiento tras hacer uno incorrecto o cumplir alguna de las reglas por las que vuelve a mover
+    //Es posible que se pueda crear mediante implements o extend de la clase Movimiento y no repetir todos los metodos en esta
+    //Nueva clase
     private String color;
     private String origen;
     private String destino;

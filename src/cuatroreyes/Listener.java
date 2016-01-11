@@ -15,7 +15,7 @@ public class Listener extends UntypedActor{
     
     @Override
     public void onReceive(Object msg){
-        if(msg instanceof Movimiento){ //Fin del juego (vemos quien ha ganado)
+        if(msg instanceof Movimiento){ //Listener revisa que el movimiento sea correcto
             Movimiento m = (Movimiento) msg;
             if(m.getColor()=="Negro"){
                 VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());

@@ -10,5 +10,6 @@ package cuatroreyes;
  * @author Ivan
  */
 public class Mover {
+    //Clase para notificar a cada jugador que debe mover sus piezas
     
 }

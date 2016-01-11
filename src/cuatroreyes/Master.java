@@ -70,10 +70,10 @@ public class Master extends UntypedActor{
     public void onReceive(Object msg){
         if(msg instanceof Mover){ //Juego nuevo: Recorremos todo el enrutamiento
             workerRoute.tell(new Mover(),getSelf()); 
-        }else if(msg instanceof Movimiento){ //Fin del juego (vemos quien ha ganado)
+        }else if(msg instanceof Movimiento){ //La respuesta del jugador con su movimiento
             Movimiento m = (Movimiento) msg;
             listener.tell(m,getSelf());
-        }else if(msg instanceof VMovimiento){ //El jugador manda una respuesta con su jugada
+        }else if(msg instanceof VMovimiento){ //Despueés de un movimiento incorrecto el jugador debe volver a mover
             VMovimiento vm = (VMovimiento) msg;
             vm.getActor().tell(new Mover(),getSelf());
         }else{

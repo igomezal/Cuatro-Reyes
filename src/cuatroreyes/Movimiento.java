@@ -12,6 +12,7 @@ import akka.actor.ActorRef;
  * @author Ivan
  */
 public class Movimiento {
+    //Clase para que podamos tener los datos sobre un movimiento
     private String color;
     private String origen;
     private String destino;

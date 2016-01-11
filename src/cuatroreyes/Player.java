@@ -20,7 +20,7 @@ public class Player extends UntypedActor{
     }
     @Override
     public void onReceive(Object msg){
-        if(msg instanceof Mover){
+        if(msg instanceof Mover){ //El jugador mueve
             Scanner s = new Scanner(System.in);
             String origen;
             System.out.println("Introduce origen "+color);
