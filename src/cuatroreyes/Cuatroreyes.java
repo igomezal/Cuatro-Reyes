@@ -27,7 +27,7 @@ public class Cuatroreyes {
             return new Master(4,listener);
         }), "master");
         
-        master.tell(new Mover());
+        master.tell(new PlayGame());
     }
     
 }

@@ -68,7 +68,9 @@ public class Master extends UntypedActor{
     
     @Override
     public void onReceive(Object msg){
-        if(msg instanceof Mover){ //Juego nuevo: Recorremos todo el enrutamiento
+        if(msg instanceof PlayGame){ //Pedimos al listener que nos muestre el tablero
+            listener.tell(new PlayGame(),getSelf());
+        }else if(msg instanceof Mover){ //Recorremos todo el enrutamiento
             workerRoute.tell(new Mover(),getSelf()); 
         }else if(msg instanceof Movimiento){ //La respuesta del jugador con su movimiento
             Movimiento m = (Movimiento) msg;
