@@ -6,6 +6,7 @@
 package cuatroreyes;
 
 import akka.actor.UntypedActor;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -62,16 +63,84 @@ public class Listener extends UntypedActor{
     }
     
     @Override
-    public void onReceive(Object msg){
+    public void onReceive(Object msg) throws InterruptedException{
         if(msg instanceof Movimiento){ //Listener revisa que el movimiento sea correcto
             Movimiento m = (Movimiento) msg;
-            if("Negro".equals(m.getColor())){
+            
+            try{
+                int origenfila = Integer.parseInt(m.getOrigen().substring(1));
+                int destinofila = Integer.parseInt(m.getDestino().substring(1));
+                char origencol = m.getOrigen().charAt(0);
+                char destinocol = m.getDestino().charAt(0);
+               
+                if ((origenfila > 8)  || (origenfila < 1)){
+                    System.out.println("Out of bounds del origen");
+                    VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                    getSender().tell(vm,getSelf());
+                }
+                if((destinofila> 8)  || (destinofila < 1)){                   
+                    System.out.println("Out of bounds del destino");
+                    VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                    getSender().tell(vm,getSelf());
+                }
+
+
+                /*if("Negro".equals(m.getColor())){
+                    VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                    getSender().tell(vm,getSelf());
+                }*/else{
+                    //Movimiento correcto
+                    int origcol = 4;
+                    int destcol = 4;
+                    switch(destinocol){
+                        case 'a':destcol = 0;
+                            break;
+                        case 'b':destcol = 1;
+                            break;
+                        case 'c':destcol = 2;
+                            break;
+                        case 'd':destcol = 3;
+                            break;
+                        case 'e':destcol = 4;
+                            break;
+                        case 'f':destcol = 5;
+                            break;
+                        case 'g':destcol = 6;
+                            break;
+                        case 'h':destcol = 7;
+                            break;
+                    }
+                    switch(origencol){
+                        case 'a':origcol = 0;
+                            break;
+                        case 'b':origcol = 1;
+                            break;
+                        case 'c':origcol = 2;
+                            break;
+                        case 'd':origcol = 3;
+                            break;
+                        case 'e':origcol = 4;
+                            break;
+                        case 'f':origcol = 5;
+                            break;
+                        case 'g':origcol = 6;
+                            break;
+                        case 'h':origcol = 7;
+                            break;
+                    }
+                    tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
+                    tablero[origenfila-1][origcol] = "  ";
+                    getSender().tell(new PlayGame(),getSelf());
+                }
+            }catch (NumberFormatException ex){
+                System.out.println("Los valores del tablero que has introducido no son correctos");
+                Thread.sleep(1000);//Para que de tiempo a leer el mensaje anterior
+                tableroActual();
                 VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
                 getSender().tell(vm,getSelf());
-            }else{
-                getSender().tell(new PlayGame(),getSelf());
             }
         }else if(msg instanceof PlayGame){
+            
             tableroActual();
             getSender().tell(new Mover(),getSelf());
         }
