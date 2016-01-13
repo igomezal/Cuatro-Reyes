@@ -131,6 +131,7 @@ public class Listener extends UntypedActor{
                     tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
                     tablero[origenfila-1][origcol] = "  ";
                     getSender().tell(new PlayGame(),getSelf());
+                    
                 }
             }catch (NumberFormatException ex){
                 System.out.println("Los valores del tablero que has introducido no son correctos");
