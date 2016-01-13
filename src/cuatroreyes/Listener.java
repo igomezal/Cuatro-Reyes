@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class Listener extends UntypedActor{
     private String[][] tablero;
+    private int[] puntuacion;
+    private int[] reyes;
+    private int[] reyesComidos;
     
     public Listener(){
         //Inicializamos tablero con los valores del tablero inicial
@@ -60,6 +63,13 @@ public class Listener extends UntypedActor{
         tablero[1][6] = "PR";
         tablero[2][6] = "PR";
         tablero[3][6] = "PR";
+        
+        puntuacion = new int[4];
+        reyes = new int[4];
+        for (int i=0;i<4;i++){
+            reyes[i]=1;
+        }
+        reyesComidos = new int[4];
     }
     
     @Override
@@ -128,6 +138,27 @@ public class Listener extends UntypedActor{
                         case 'h':origcol = 7;
                             break;
                     }
+                    if (getPiezaTablero(destinofila-1, destcol)!= "  " && getPiezaTablero(destinofila-1, destcol).charAt(1)!=m.getColor().charAt(0)){
+                        switch(getPiezaTablero(destinofila-1, destcol).charAt(0)){
+                            case 'P': System.out.println("Has comido un peón, ganas un punto");
+                                comer(1,m.getColor().charAt(0));
+                                break;
+                            case 'B': System.out.println("Has comido un barco, ganas dos puntos");
+                                comer(2,m.getColor().charAt(0));
+                                break;
+                            case 'C': System.out.println("Has comido un caballo, ganas tres puntos");
+                                comer(3,m.getColor().charAt(0));
+                                break;
+                            case 'E': System.out.println("Has comido un elefante, ganas cuatro puntos");
+                                comer(4,m.getColor().charAt(0));
+                                break;
+                            case 'R': System.out.println("Has comido un rey, ganas cinco puntos");
+                                comer(5,m.getColor().charAt(0));
+                                comerRey(m.getColor().charAt(0),getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                break;
+                        }
+                    }
+                    mostrarPuntuaciones();
                     tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
                     tablero[origenfila-1][origcol] = "  ";
                     getSender().tell(new PlayGame(),getSelf());
@@ -160,6 +191,112 @@ public class Listener extends UntypedActor{
         }
         System.out.println(" +--+--+--+--+--+--+--+--+");
         System.out.println("  a  b  c  d  e  f  g  h  ");
+    }
+    
+    public void comer(int i,char c){
+        if (i==5){
+            switch(c){
+                case 'B': this.reyesComidos[0]+=1;
+                    break;
+                case 'N': this.reyesComidos[1]+=1;
+                    break;
+                case 'V': this.reyesComidos[2]=+1;
+                    break;
+                case 'R': this.reyesComidos[3]=+1;
+                    break;
+            }
+        }
+        switch(c){
+            case 'B': this.puntuacion[0]+=i;
+                break;
+            case 'N': this.puntuacion[1]+=i;
+                break;
+            case 'V': this.puntuacion[2]=+i;
+                break;
+            case 'R': this.puntuacion[3]=+i;
+                break;
+        }
+        
+    }
+    public void comerRey(char c,char r){
+        
+        switch(r){
+            case 'B': this.reyes[0]=0;
+                switch(c){
+                    case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
+                        this.puntuacion[0]+=54;
+                    }
+                    break;
+                    case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
+                        this.puntuacion[1]+=54;
+                    }break;
+                    case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
+                        this.puntuacion[2]=+54;
+                    }break;
+                    case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
+                        this.puntuacion[3]=+54;
+                    }break;
+                }
+            break;
+            case 'N': this.reyes[1]=0;
+                switch(c){
+                    case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
+                        this.puntuacion[0]+=54;
+                    }
+                    break;
+                    case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
+                        this.puntuacion[1]+=54;
+                    }break;
+                    case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
+                        this.puntuacion[2]=+54;
+                    }break;
+                    case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
+                        this.puntuacion[3]=+54;
+                    }break;
+                }
+            break;
+            case 'V': this.reyes[2]=0;
+                switch(c){
+                    case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
+                        this.puntuacion[0]+=54;
+                    }
+                    break;
+                    case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
+                        this.puntuacion[1]+=54;
+                    }break;
+                    case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
+                        this.puntuacion[2]=+54;
+                    }break;
+                    case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
+                        this.puntuacion[3]=+54;
+                    }break;
+                }
+            break;
+            case 'R': this.reyes[3]=0;
+                switch(c){
+                    case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
+                        this.puntuacion[0]+=54;
+                    }
+                    break;
+                    case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
+                        this.puntuacion[1]+=54;
+                    }break;
+                    case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
+                        this.puntuacion[2]=+54;
+                    }break;
+                    case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
+                        this.puntuacion[3]=+54;
+                    }break;
+                }
+            break;
+        }
+    }
+    
+    public void mostrarPuntuaciones(){
+        System.out.println("Jugador Blanco: "+this.puntuacion[0]+" puntos.");
+        System.out.println("Jugador Negro: "+this.puntuacion[1]+" puntos.");
+        System.out.println("Jugador Verde: "+this.puntuacion[2]+" puntos.");
+        System.out.println("Jugador Rojo: "+this.puntuacion[3]+" puntos.");
     }
     
     public String getPiezaTablero(int fila,int columna){
