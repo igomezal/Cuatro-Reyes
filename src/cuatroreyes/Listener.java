@@ -6,7 +6,6 @@
 package cuatroreyes;
 
 import akka.actor.UntypedActor;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -14,6 +13,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class Listener extends UntypedActor{
     private String[][] tablero;
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
     
     public Listener(){
         //Inicializamos tablero con los valores del tablero inicial
@@ -60,6 +62,11 @@ public class Listener extends UntypedActor{
         tablero[1][6] = "PR";
         tablero[2][6] = "PR";
         tablero[3][6] = "PR";
+        
+        //Las siguientes entradas en el tablero son para testing, para no tirarme 4 turnos de cada color
+        //para llegar a una situación que quiero. No deben aparecer en la versión final, obviamente
+        tablero[2][2] = "PN";
+        //Fin entradas de testing
     }
     
     @Override
@@ -68,81 +75,18 @@ public class Listener extends UntypedActor{
             Movimiento m = (Movimiento) msg;
             
             try{
-                /*int origenfila = Integer.parseInt(m.getOrigen().substring(1));
-                int destinofila = Integer.parseInt(m.getDestino().substring(1));
-                char origencol = m.getOrigen().charAt(0);
-                char destinocol = m.getDestino().charAt(0);
-               
-                if ((origenfila > 8)  || (origenfila < 1)){
-                    System.out.println("Out of bounds del origen");
+                if (movCorrecto(m)){
+                    System.out.println(ANSI_GREEN+"Movimiento correcto"+ANSI_RESET); 
+                }else{
+                    System.out.println(ANSI_RED+"Movimiento incorrecto"+ANSI_RESET);
+                    Thread.sleep(1000);//Para que de tiempo a leer el mensaje anterior
+                    tableroActual();
                     VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
                     getSender().tell(vm,getSelf());
                 }
-                if((destinofila> 8)  || (destinofila < 1)){                   
-                    System.out.println("Out of bounds del destino");
-                    VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
-                    getSender().tell(vm,getSelf());
-                }
-
-
-                /*if("Negro".equals(m.getColor())){
-                    VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
-                    getSender().tell(vm,getSelf());
-                }*else{
-                    //Movimiento correcto
-                    int origcol = 4;
-                    int destcol = 4;
-                    switch(destinocol){
-                        case 'a':destcol = 0;
-                            break;
-                        case 'b':destcol = 1;
-                            break;
-                        case 'c':destcol = 2;
-                            break;
-                        case 'd':destcol = 3;
-                            break;
-                        case 'e':destcol = 4;
-                            break;
-                        case 'f':destcol = 5;
-                            break;
-                        case 'g':destcol = 6;
-                            break;
-                        case 'h':destcol = 7;
-                            break;
-                    }
-                    switch(origencol){
-                        case 'a':origcol = 0;
-                            break;
-                        case 'b':origcol = 1;
-                            break;
-                        case 'c':origcol = 2;
-                            break;
-                        case 'd':origcol = 3;
-                            break;
-                        case 'e':origcol = 4;
-                            break;
-                        case 'f':origcol = 5;
-                            break;
-                        case 'g':origcol = 6;
-                            break;
-                        case 'h':origcol = 7;
-                            break;*/
-                    //}
-            if (movCorrecto(m)){
-                        /*tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
-                        tablero[origenfila-1][origcol] = "  ";
-                        getSender().tell(new PlayGame(),getSelf());*/
-                System.out.println("Movimiento correcto"); 
-            }else{
-                System.out.println("Movimiento incorrecto");
-                Thread.sleep(1000);//Para que de tiempo a leer el mensaje anterior
-                tableroActual();
-                VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
-                getSender().tell(vm,getSelf());
-            }
                 //}
             }catch (NumberFormatException ex){
-                System.out.println("Los valores del tablero que has introducido no son correctos");
+                System.out.println(ANSI_RED+"Los valores del tablero que has introducido no son correctos"+ANSI_RESET);
                 Thread.sleep(1000);//Para que de tiempo a leer el mensaje anterior
                 tableroActual();
                 VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
@@ -188,11 +132,11 @@ public class Listener extends UntypedActor{
         int destcol = 9;
 
         if ((origfila > 8)  || (origfila < 1)){
-            System.out.println("Out of bounds del origen");
+            System.out.println(ANSI_RED+"Out of bounds del origen"+ANSI_RESET);
             return correcto;
         }
         if((destfila> 8)  || (destfila < 1)){                   
-            System.out.println("Out of bounds del destino");
+            System.out.println(ANSI_RED+"Out of bounds del destino"+ANSI_RESET);
             return correcto;
             /*VMovimiento vm = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
             getSender().tell(vm,getSelf());*/
@@ -253,12 +197,28 @@ public class Listener extends UntypedActor{
                 switch(pieza){
                     case 'P':{//Peon
                         //La columna tiene que ser la misma, de momento no se comprueba el comer en diagonal
-                        if(origcol == destcol)//Añadir else aqui para ver si se come
+                        if(origcol == destcol){//Añadir else aqui para ver si se come
                             if(origfila == (destfila-1)){
-                                System.out.println("Mov peon blanco correcto");
-                                correcto = true;
+                                if(destVacio(destfila, destcol)){
+                                    System.out.println("Mov peon blanco correcto");
+                                    correcto = true;
+                                }
+                            }else{
+                                
                             }
+                        }else{
+                            if(origcol == destcol+1 || origcol == destcol-1){
+                                if(!destVacio(destfila, destcol)){
+                                    System.out.println("Peon blanco ha comido");
+                                    correcto = true;
+                                }
+                            }
+                        }
                     }break;
+                    case 'R':{
+                        correcto = movRey(origfila, origcol, destfila, destcol);
+                        break;
+                    }
                 }
             }break;
             
@@ -266,16 +226,28 @@ public class Listener extends UntypedActor{
                 switch(pieza){
                     case 'P':{//Peon
                         //La fila tiene que ser la misma, de momento no se comprueba el comer en diagonal
-                        System.out.println("Debug Peon NEgro");
-                        if(origfila == destfila)
+                        if(origfila == destfila){
                             if(origcol == (destcol-1)){
-                                System.out.println("Mov peon negro correcto");
-                                correcto = true;
-                            }else
+                                if(destVacio(destfila, destcol)){
+                                    System.out.println("Mov peon Negro correcto");
+                                    correcto = true;
+                                }
+                            }else{
                                 System.out.println("Else de columnas distintas");
-                        else
-                            System.out.println("Else de filas distintas");
+                            }
+                        }else{
+                            if(origfila == destfila+1 || origfila == destfila-1){
+                                if(!destVacio(destfila, destcol)){
+                                    System.out.println("Peon negro ha comido");
+                                    correcto = true;
+                                }
+                            }
+                        }
                     }break;
+                    case 'R':{
+                        correcto = movRey(origfila, origcol, destfila, destcol);
+                        break;
+                    }
                 }
             }break;
             
@@ -283,12 +255,28 @@ public class Listener extends UntypedActor{
                 switch(pieza){
                     case 'P':{//Peon
                         //La columna tiene que ser la misma, de momento no se comprueba el comer en diagonal
-                        if(origcol == destcol)//Añadir else aqui para ver si se come
+                        if(origcol == destcol){//Añadir else aqui para ver si se come
                             if(origfila == (destfila+1)){
-                                System.out.println("Mov peon verde correcto");
-                                correcto = true;
+                                if(destVacio(destfila, destcol)){
+                                    System.out.println("Mov peon verde correcto");
+                                    correcto = true;
+                                }
+                            }else{
+                                
                             }
+                        }else{
+                            if(origcol == destcol+1 || origcol == destcol-1){
+                                if(!destVacio(destfila, destcol)){
+                                    System.out.println("Peon verde ha comido");
+                                    correcto = true;
+                                }
+                            }
+                        }
                     }break;
+                    case 'R':{
+                        correcto = movRey(origfila, origcol, destfila, destcol);
+                        break;
+                    }
                 }
             }break;
                 
@@ -296,12 +284,28 @@ public class Listener extends UntypedActor{
                 switch(pieza){
                     case 'P':{//Peon
                         //La columna fila que ser la misma, de momento no se comprueba el comer en diagonal
-                        if(origfila == destfila)
+                        if(origfila == destfila){
                             if(origcol == (destcol+1)){
-                                System.out.println("Mov peon Rojo correcto");
-                                correcto = true;
+                                if(destVacio(destfila, destcol)){
+                                    System.out.println("Mov peon rojo correcto");
+                                    correcto = true;
+                                }
+                            }else{
+                                
                             }
+                        }else{
+                            if(origfila == destfila+1 || origfila == destfila-1){
+                                if(!destVacio(destfila, destcol)){
+                                    System.out.println("Peon rojo ha comido");
+                                    correcto = true;
+                                }
+                            }
+                        }
                     }break;
+                    case 'R':{
+                        correcto = movRey(origfila, origcol, destfila, destcol);
+                        break;
+                    }
                 }
             }break;
                 
@@ -323,6 +327,28 @@ public class Listener extends UntypedActor{
     
     public char getColorFromPos(int fila, int columna){
         return tablero[fila][columna].charAt(1);
+    }
+    
+    public boolean destVacio(int destfila, int destcol){
+        boolean vacio = false;
+        if(getPiezaTablero(destfila, destcol).equals("  ")){
+            vacio = true;
+        }
+        return vacio;
+    }
+    
+    public boolean movRey(int origfila, int origcol, int destfila, int destcol){
+        boolean reyOk = false;
+        if(origfila == destfila){//Misma fila
+            reyOk = (origcol == destcol+1 || origcol == destcol-1);
+        }
+        if(origcol == destcol){//Misma columna
+            reyOk = (origfila == destfila+1 || origfila == destfila-1);
+        }
+        if(origfila != destfila && origcol != destcol){//Diagonal
+            reyOk = ((origfila == destfila+1 || origfila == destfila-1) && (origcol == destcol+1 || origcol == destcol-1));
+        }
+        return reyOk;
     }
     
 }
