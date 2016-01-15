@@ -65,8 +65,11 @@ public class Listener extends UntypedActor{
         
         //Las siguientes entradas en el tablero son para testing, para no tirarme 4 turnos de cada color
         //para llegar a una situación que quiero. No deben aparecer en la versión final, obviamente
-        tablero[2][2] = "PN";
+        tablero[1][2] = "  ";
         tablero[2][3] = "PB";
+        tablero[4][0] = "  ";
+        tablero[5][1] = "  ";
+        tablero[4][2] = "PV";
         //Fin entradas de testing
     }
     
@@ -86,7 +89,7 @@ public class Listener extends UntypedActor{
                     getSender().tell(vm,getSelf());
                 }
                 //}
-            }catch (NumberFormatException ex){
+            }catch (NumberFormatException | StringIndexOutOfBoundsException ex){
                 System.out.println(ANSI_RED+"Los valores del tablero que has introducido no son correctos"+ANSI_RESET);
                 Thread.sleep(1000);//Para que de tiempo a leer el mensaje anterior
                 tableroActual();
@@ -120,7 +123,7 @@ public class Listener extends UntypedActor{
         return this.tablero[fila][columna];
     }
     
-    public boolean movCorrecto(Movimiento m) throws NumberFormatException{
+    public boolean movCorrecto(Movimiento m) throws NumberFormatException, StringIndexOutOfBoundsException{
         boolean correcto = false;
         
         int origfila = Integer.parseInt(m.getOrigen().substring(1));
@@ -168,6 +171,7 @@ public class Listener extends UntypedActor{
                     break;
                 case 'h':destcol = 7;
                     break;
+                default: return false; //Si no se puede hacer la conversión, el movimiento no es válido
             }
             switch(charOrigencol){
                 case 'a':origcol = 0;
@@ -186,7 +190,12 @@ public class Listener extends UntypedActor{
                     break;
                 case 'h':origcol = 7;
                     break;
+                default: return false;
             }
+        }
+        
+        if((origcol == destcol) && (origfila == destfila)){
+            return false;//No se ha movido la pieza
         }
         
         if (getPiezaTablero(destfila, destcol).charAt(1)!=m.getColor().charAt(0)){
@@ -199,8 +208,7 @@ public class Listener extends UntypedActor{
                 case 'B':{/////////////////////////////////////BLANCO
                     switch(pieza){
                         case 'P':{//Peon
-                            //La columna tiene que ser la misma, de momento no se comprueba el comer en diagonal
-                            if(origcol == destcol){//Añadir else aqui para ver si se come
+                            if(origcol == destcol){
                                 if(origfila == (destfila-1)){
                                     if(destVacio(destfila, destcol)){
                                         //System.out.println("Mov peon blanco correcto");
@@ -211,7 +219,7 @@ public class Listener extends UntypedActor{
                                 }
                             }else{
                                 if(origcol == destcol+1 || origcol == destcol-1){
-                                    if(!destVacio(destfila, destcol)){// && (getPiezaTablero(destfila, destcol).charAt(1)!=m.getColor().charAt(0))){
+                                    if(!destVacio(destfila, destcol)){
                                         correcto = true;
                                     }
                                 }
@@ -225,13 +233,20 @@ public class Listener extends UntypedActor{
                             correcto = movCaballo(origfila, origcol, destfila, destcol);
                             break;
                         }
+                        case 'E':{
+                            correcto = movElefante(origfila, origcol, destfila, destcol);
+                            break;
+                        }
+                        case 'B':{
+                            correcto = movBarco(origfila, origcol, destfila, destcol);
+                            break;
+                        }
                     }
                 }break;
 
                 case 'N':{/////////////////////////////////////NEGRO
                     switch(pieza){
                         case 'P':{//Peon
-                            //La fila tiene que ser la misma, de momento no se comprueba el comer en diagonal
                             if(origfila == destfila){
                                 if(origcol == (destcol-1)){
                                     if(destVacio(destfila, destcol)){
@@ -258,14 +273,21 @@ public class Listener extends UntypedActor{
                             correcto = movCaballo(origfila, origcol, destfila, destcol);
                             break;
                         }
+                        case 'E':{
+                            correcto = movElefante(origfila, origcol, destfila, destcol);
+                            break;
+                        }
+                        case 'B':{
+                            correcto = movBarco(origfila, origcol, destfila, destcol);
+                            break;
+                        }
                     }
                 }break;
 
                 case 'V':{/////////////////////////////////////////VERDE
                     switch(pieza){
                         case 'P':{//Peon
-                            //La columna tiene que ser la misma, de momento no se comprueba el comer en diagonal
-                            if(origcol == destcol){//Añadir else aqui para ver si se come
+                            if(origcol == destcol){
                                 if(origfila == (destfila+1)){
                                     if(destVacio(destfila, destcol)){
                                         //System.out.println("Mov peon verde correcto");
@@ -291,13 +313,20 @@ public class Listener extends UntypedActor{
                             correcto = movCaballo(origfila, origcol, destfila, destcol);
                             break;
                         }
+                        case 'E':{
+                            correcto = movElefante(origfila, origcol, destfila, destcol);
+                            break;
+                        }
+                        case 'B':{
+                            correcto = movBarco(origfila, origcol, destfila, destcol);
+                            break;
+                        }
                     }
                 }break;
 
                 case 'R':{///////////////////////////////////////////ROJO
                     switch(pieza){
                         case 'P':{//Peon
-                            //La columna fila que ser la misma, de momento no se comprueba el comer en diagonal
                             if(origfila == destfila){
                                 if(origcol == (destcol+1)){
                                     if(destVacio(destfila, destcol)){
@@ -322,6 +351,14 @@ public class Listener extends UntypedActor{
                         }
                         case 'C':{
                             correcto = movCaballo(origfila, origcol, destfila, destcol);
+                            break;
+                        }
+                        case 'E':{
+                            correcto = movElefante(origfila, origcol, destfila, destcol);
+                            break;
+                        }
+                        case 'B':{
+                            correcto = movBarco(origfila, origcol, destfila, destcol);
                             break;
                         }
                     }
@@ -384,9 +421,54 @@ public class Listener extends UntypedActor{
     }
     
     public boolean movElefante(int origfila, int origcol, int destfila, int destcol){
-        boolean elefanteOk = false;
-            //Toy en ello
+        boolean elefanteOk = true;
+        int aux;
+            if(origfila == destfila){
+                if(origcol > destcol){//Va a la izquierda
+                    for(aux = origcol-1; aux>destcol; aux--){
+                        if(!destVacio(origfila,aux)){//Si en alguna hay una pieza, el movimiento es erróneo
+                            return false;// Si se encuentra alguna pieza, no es necesario continuar con el bucle
+                        }
+                    }
+                }
+                if(origcol < destcol){//Va a la derecha
+                    for(aux = origcol+1; aux<destcol; aux++){
+                        if(!destVacio(origfila,aux)){//Si en alguna hay una pieza, el movimiento es erróneo
+                            return false;
+                        }
+                    }
+                }
+            }
+            if(origcol == destcol){
+                if(origfila > destfila){//Va hacia abajo
+                    for(aux = origfila-1; aux>destfila; aux--){
+                        if(!destVacio(aux, origcol)){//Si en alguna hay una pieza, el movimiento es erróneo
+                            return false;
+                        }
+                    }
+                }
+            }
+            if(origcol == destcol){
+                if(origfila < destfila){//Va hacia arriba
+                    for(aux = origfila+1; aux<destfila; aux++){
+                        if(!destVacio(aux, origcol)){//Si en alguna hay una pieza, el movimiento es erróneo
+                            return false;
+                        }
+                    }
+                }
+            }
         return elefanteOk;
+    }
+    
+    public boolean movBarco(int origfila, int origcol, int destfila, int destcol){
+        boolean movBarco = false;
+        if(origfila == destfila +2){
+            movBarco = (origcol == destcol+2 || origcol == destcol-2);
+        }
+        if(origfila == destfila -2){
+            movBarco = (origcol == destcol+2 || origcol == destcol-2);
+        }
+        return movBarco;
     }
     
 }
