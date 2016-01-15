@@ -29,6 +29,8 @@ public class Player extends UntypedActor{
             System.out.println("Introduce destino "+color);
             destino = s.nextLine();
             getSender().tell(new Movimiento(getSelf(),color,origen,destino),getSelf());
+        }else if(msg instanceof FinishGame) {
+            getContext().stop(getSelf());
         }else{
             unhandled(msg);
         }

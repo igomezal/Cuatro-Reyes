@@ -19,12 +19,14 @@ public class VMovimiento {
     private String origen;
     private String destino;
     private ActorRef actor;
+    private Boolean vuelveAjugar;
     
     public VMovimiento(ActorRef actor,String color,String origen,String destino){
         this.actor = actor;
         this.color = color;
         this.origen = origen;
         this.destino = destino;
+        this.vuelveAjugar = false;
     }
 
     public String getColor() {
@@ -57,5 +59,9 @@ public class VMovimiento {
 
     public void setActor(ActorRef actor) {
         this.actor = actor;
+    }
+    
+    public void setVuelveAjugar(Boolean b){
+        this.vuelveAjugar=b;
     }
 }

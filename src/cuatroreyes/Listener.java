@@ -6,6 +6,8 @@
 package cuatroreyes;
 
 import akka.actor.UntypedActor;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,6 +19,10 @@ public class Listener extends UntypedActor{
     private int[] puntuacion;
     private int[] reyes;
     private int[] reyesComidos;
+    private ArrayList<Character> tronosB;
+    private ArrayList<Character> tronosN;
+    private ArrayList<Character> tronosV;
+    private ArrayList<Character> tronosR;
     
     public Listener(){
         //Inicializamos tablero con los valores del tablero inicial
@@ -70,6 +76,10 @@ public class Listener extends UntypedActor{
             reyes[i]=1;
         }
         reyesComidos = new int[4];
+        tronosB = new ArrayList<Character>();
+        tronosN = new ArrayList<Character>();
+        tronosV = new ArrayList<Character>();
+        tronosR = new ArrayList<Character>();
     }
     
     @Override
@@ -82,6 +92,7 @@ public class Listener extends UntypedActor{
                 int destinofila = Integer.parseInt(m.getDestino().substring(1));
                 char origencol = m.getOrigen().charAt(0);
                 char destinocol = m.getDestino().charAt(0);
+                boolean acabado = false;
                
                 if ((origenfila > 8)  || (origenfila < 1)){
                     System.out.println("Out of bounds del origen");
@@ -154,16 +165,399 @@ public class Listener extends UntypedActor{
                                 break;
                             case 'R': System.out.println("Has comido un rey, ganas cinco puntos");
                                 comer(5,m.getColor().charAt(0));
-                                comerRey(m.getColor().charAt(0),getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                acabado = comerRey(m.getColor().charAt(0),getPiezaTablero(destinofila-1, destcol).charAt(1));
                                 break;
                         }
                     }
+                   
+                    
+                    if ((getPiezaTablero(origenfila-1, origcol).charAt(0)=='R')&&(getPiezaTablero(destinofila-1, destcol).charAt(1)!=m.getColor().charAt(0))){
+                        if ((destinofila-1==4)&&(destcol==0)){
+                            switch(m.getColor().charAt(0)){
+                                case 'B':
+                                    if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosB.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                    if (tronosB.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[0]=puntuacion[0]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm1 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm1.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm1,getSelf());
+                                    
+                                    break;
+                                case 'N':
+                                    if (!tronosN.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosN.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosN.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[1]=puntuacion[1]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm2 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm2.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm2,getSelf());
+                                    
+                                    break;
+                                case 'V': 
+                                    if (!tronosV.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosV.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosV.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[2]=puntuacion[2]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm3 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm3.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm3,getSelf());
+                                    
+                                    break;
+                                case 'R':
+                                    if (!tronosR.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosR.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosR.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[3]=puntuacion[3]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm4 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm4.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm4,getSelf());
+                                    
+                                    break; 
+                            }
+                        }
+                        if ((destinofila-1==7)&&(destcol==4)){
+                             switch(m.getColor().charAt(0)){
+                                case 'B':
+                                    if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosB.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                    if (tronosB.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[0]=puntuacion[0]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm1 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm1.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm1,getSelf());
+                                    
+                                    break;
+                                case 'N':
+                                    if (!tronosN.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosN.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosN.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[1]=puntuacion[1]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm2 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm2.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm2,getSelf());
+                                    
+                                    break;
+                                case 'V': 
+                                    if (!tronosV.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosV.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosV.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[2]=puntuacion[2]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm3 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm3.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm3,getSelf());
+                                    
+                                    break;
+                                case 'R':
+                                    if (!tronosR.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosR.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosR.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[3]=puntuacion[3]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm4 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm4.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm4,getSelf());
+                                    
+                                    break; 
+                            }
+                            
+                        }   
+                        if ((destinofila-1==0)&&(destcol==3)){
+                             switch(m.getColor().charAt(0)){
+                                case 'B':
+                                    if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosB.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                    if (tronosB.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[0]=puntuacion[0]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm1 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm1.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm1,getSelf());
+                                    
+                                    break;
+                                case 'N':
+                                    if (!tronosN.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosN.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosN.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[1]=puntuacion[1]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm2 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm2.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm2,getSelf());
+                                    
+                                    break;
+                                case 'V': 
+                                    if (!tronosV.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosV.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosV.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[2]=puntuacion[2]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm3 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm3.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm3,getSelf());
+                                    
+                                    break;
+                                case 'R':
+                                    if (!tronosR.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosR.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosR.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[3]=puntuacion[3]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm4 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm4.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm4,getSelf());
+                                    
+                                    break; 
+                            }
+                        
+                        }
+                        if ((destinofila-1==3)&&(destcol==7)){
+                              switch(m.getColor().charAt(0)){
+                                case 'B':
+                                    if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosB.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                    if (tronosB.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[0]=puntuacion[0]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm1 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm1.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm1,getSelf());
+                                    
+                                    break;
+                                case 'N':
+                                    if (!tronosN.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosN.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosN.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[1]=puntuacion[1]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm2 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm2.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm2,getSelf());
+                                    
+                                    break;
+                                case 'V': 
+                                    if (!tronosV.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosV.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosV.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[2]=puntuacion[2]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm3 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm3.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    getSender().tell(vm3,getSelf());
+                                    
+                                    break;
+                                case 'R':
+                                    if (!tronosR.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
+                                    tronosR.add(getPiezaTablero(destinofila-1, destcol).charAt(1));
+                                    }
+                                     if (tronosR.size()==3){
+                                        for (int i=0;i<8;i++){
+                                            for(int j=0;j<8;j++){
+                                                if(this.tablero[i][j]=="EB"){
+                                                    System.out.println("Enhorabuena has conseguido capturar todos los tronos");
+                                                    puntuacion[3]=puntuacion[3]*4;
+                                                    finalJuego();
+                                                }
+                                            }
+                                        } 
+                                    }
+                                    VMovimiento vm4 = new VMovimiento(m.getActor(),m.getColor(),m.getOrigen(),m.getDestino());
+                                    vm4.setVuelveAjugar(true);
+                                    mostrarPuntuaciones();
+                                    
+                                    getSender().tell(vm4,getSelf());
+                                    
+                                    break; 
+                            }
+                          
+                            
+                        }
+                        
+                        tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
+                        tablero[origenfila-1][origcol] = "  ";
+                        tableroActual();
+                        
+                    } 
+                    else{
                     mostrarPuntuaciones();
+                    
+                    
                     tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
                     tablero[origenfila-1][origcol] = "  ";
-                    getSender().tell(new PlayGame(),getSelf());
+                        if (acabado == true){
+                            System.out.println("El juego ha acabado:");
+                            int j=0;
+                            for (int i=0; i<4; i++){
+                                if (puntuacion[i]>j){
+                                    j=puntuacion[i];
+                                }
+                            }
+                            finalJuego();
+                        } 
                     
-                }
+                    
+                    getSender().tell(new PlayGame(),getSelf());  
+                    }  
+                    
+            }
+                
             }catch (NumberFormatException ex){
                 System.out.println("Los valores del tablero que has introducido no son correctos");
                 Thread.sleep(1000);//Para que de tiempo a leer el mensaje anterior
@@ -193,6 +587,26 @@ public class Listener extends UntypedActor{
         System.out.println("  a  b  c  d  e  f  g  h  ");
     }
     
+    public void finalJuego(){  
+        int j=0;
+        String color =" ";
+        int z=0;
+        for (int i=0; i<4; i++){
+            if(puntuacion[i]>j){
+               j=puntuacion[i]; 
+               z=i;
+            }
+            if (z==0){color = "Blanco";}
+            if (z==1){color = "Negro";}
+            if (z==2){color = "Verde";}
+            if (z==3){color = "Rojo";}
+        }
+        System.out.println("Enhorabuena jugador "+color+", has ganado con una puntuación de "+j);
+        getSender().tell(new FinishGame(), getSelf());
+        getContext().stop(getSelf());
+        getContext().system().shutdown();
+    }
+    
     public void comer(int i,char c){
         if (i==5){
             switch(c){
@@ -218,23 +632,27 @@ public class Listener extends UntypedActor{
         }
         
     }
-    public void comerRey(char c,char r){
+    public boolean comerRey(char c,char r){
         
         switch(r){
             case 'B': this.reyes[0]=0;
                 switch(c){
                     case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
                         this.puntuacion[0]+=54;
+                        return true;
                     }
                     break;
                     case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
                         this.puntuacion[1]+=54;
+                        return true;
                     }break;
                     case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
                         this.puntuacion[2]=+54;
+                        return true;
                     }break;
                     case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
                         this.puntuacion[3]=+54;
+                        return true;
                     }break;
                 }
             break;
@@ -242,16 +660,20 @@ public class Listener extends UntypedActor{
                 switch(c){
                     case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
                         this.puntuacion[0]+=54;
+                        return true;
                     }
                     break;
                     case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
                         this.puntuacion[1]+=54;
+                        return true;
                     }break;
                     case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
                         this.puntuacion[2]=+54;
+                        return true;
                     }break;
                     case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
                         this.puntuacion[3]=+54;
+                        return true;
                     }break;
                 }
             break;
@@ -259,16 +681,20 @@ public class Listener extends UntypedActor{
                 switch(c){
                     case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
                         this.puntuacion[0]+=54;
+                        return true;
                     }
                     break;
                     case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
                         this.puntuacion[1]+=54;
+                        return true;
                     }break;
                     case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
                         this.puntuacion[2]=+54;
+                        return true;
                     }break;
                     case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
                         this.puntuacion[3]=+54;
+                        return true;
                     }break;
                 }
             break;
@@ -276,20 +702,25 @@ public class Listener extends UntypedActor{
                 switch(c){
                     case 'B': if(reyesComidos[0]==3 && reyes[0]==1){
                         this.puntuacion[0]+=54;
+                        return true;
                     }
                     break;
                     case 'N': if(reyesComidos[1]==3 && reyes[1]==1){ 
                         this.puntuacion[1]+=54;
+                        return true;
                     }break;
                     case 'V': if(reyesComidos[2]==3 && reyes[2]==1){
                         this.puntuacion[2]=+54;
+                        return true;
                     }break;
                     case 'R':  if(reyesComidos[3]==3 && reyes[3]==1){
                         this.puntuacion[3]=+54;
+                        return true;
                     }break;
                 }
             break;
         }
+        return false;
     }
     
     public void mostrarPuntuaciones(){

@@ -78,6 +78,11 @@ public class Master extends UntypedActor{
         }else if(msg instanceof VMovimiento){ //Despueés de un movimiento incorrecto el jugador debe volver a mover
             VMovimiento vm = (VMovimiento) msg;
             vm.getActor().tell(new Mover(),getSelf());
+        }else if(msg instanceof FinishGame){
+            for (int i=0; i<4;i++){
+            workerRoute.tell(new FinishGame());
+            }
+            getContext().stop(getSelf());     
         }else{
             unhandled(msg);
         }
