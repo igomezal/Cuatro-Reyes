@@ -213,7 +213,7 @@ public class Listener extends UntypedActor{
             switch(pieza){
                 case 'P':{
                     switch(color){
-                        case 'B':{
+                        case 'B':{/////////////////////////////////////////////////////BLANCO
                             if(origcol == destcol){
                                 if(origfila == (destfila-1)){
                                     if(destVacio(destfila, destcol)){
@@ -231,6 +231,14 @@ public class Listener extends UntypedActor{
                                 }
                             }
                             if(correcto){
+                                if((destfila == 7) && (destcol == 6)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CB";//Cambio el origen para que luego lo mueva, porque no puede cambiarse el destino aqui
+                                }
+                                if((destfila == 7) && (destcol == 5)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EB";
+                                }
                                 if((destfila == 7) && (destcol == 2)){
                                     System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
                                     tablero[origfila][origcol] = "EB";//Cambio el origen para que luego lo mueva, porque no puede cambiarse el destino aqui
@@ -242,7 +250,7 @@ public class Listener extends UntypedActor{
                             }
                         break;
                         }
-                        case 'N':{
+                        case 'N':{//////////////////////////////////////////////////////NEGRO
                             if(origfila == destfila){
                                 if(origcol == (destcol-1)){
                                     if(destVacio(destfila, destcol)){
@@ -269,9 +277,17 @@ public class Listener extends UntypedActor{
                                     System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
                                     tablero[origfila][origcol] = "CN";
                                 }
+                                if((destfila == 2) && (destcol == 7)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EN";
+                                }
+                                if((destfila == 1) && (destcol == 7)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CN";
+                                }
                             }
                         break;}
-                        case 'V':{
+                        case 'V':{///////////////////////////////////////////////////////////VERDE
                             if(origcol == destcol){
                                 if(origfila == (destfila+1)){
                                     if(destVacio(destfila, destcol)){
@@ -298,10 +314,18 @@ public class Listener extends UntypedActor{
                                     System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
                                     tablero[origfila][origcol] = "CV";
                                 }
+                                if((destfila == 0) && (destcol == 1)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CV";
+                                }
+                                if((destfila == 0) && (destcol == 2)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EV";
+                                }
                             }
                         break;
                         }
-                        case 'R':{
+                        case 'R':{//////////////////////////////////////////////////////ROJO
                             if(origfila == destfila){
                                 if(origcol == (destcol+1)){
                                     if(destVacio(destfila, destcol)){
@@ -325,6 +349,14 @@ public class Listener extends UntypedActor{
                                     tablero[origfila][origcol] = "ER";
                                 }
                                 if((destfila == 1) && (destcol == 0)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CR";
+                                }
+                                if((destfila == 5) && (destcol == 0)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "ER";
+                                }
+                                if((destfila == 6) && (destcol == 0)){
                                     System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
                                     tablero[origfila][origcol] = "CR";
                                 }
@@ -658,6 +690,12 @@ public class Listener extends UntypedActor{
             movBarco = (origcol == destcol+2 || origcol == destcol-2);
         }
         return movBarco;
+    }
+    
+    public boolean victoriaNaval(int destfila, int destcol){
+        boolean victoria = false;
+        
+        return victoria;
     }
     
 }
