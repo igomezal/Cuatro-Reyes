@@ -174,6 +174,7 @@ public class Listener extends UntypedActor{
                     if ((getPiezaTablero(origenfila-1, origcol).charAt(0)=='R')&&(getPiezaTablero(destinofila-1, destcol).charAt(1)!=m.getColor().charAt(0))){
                         if(((destinofila-1==4)&&(destcol==0))||((destinofila-1==7)&&(destcol==4))||((destinofila-1==0)&&(destcol==3))||((destinofila-1==3)&&(destcol==7))){
                         if ((destinofila-1==4)&&(destcol==0)){
+                            if ((getPiezaTablero(origenfila-1,origcol).charAt(1))!= 'N'){
                             switch(m.getColor().charAt(0)){
                                 case 'B':
                                     if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
@@ -260,9 +261,13 @@ public class Listener extends UntypedActor{
                                     
                                     break; 
                             }
+                        } else{
+                                getSender().tell(new PlayGame(),getSelf());
+                            }
                         }
                         
                         if ((destinofila-1==7)&&(destcol==4)){
+                            if ((getPiezaTablero(origenfila-1,origcol).charAt(1))!= 'V'){
                              switch(m.getColor().charAt(0)){
                                 case 'B':
                                     if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
@@ -349,10 +354,13 @@ public class Listener extends UntypedActor{
                                     
                                     break; 
                             }
-                            
+                            } else{
+                                getSender().tell(new PlayGame(),getSelf());
+                            }
                         }
                            
                         if ((destinofila-1==0)&&(destcol==3)){
+                            if ((getPiezaTablero(origenfila-1,origcol).charAt(1))!= 'B'){
                              switch(m.getColor().charAt(0)){
                                 case 'B':
                                     if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
@@ -439,10 +447,13 @@ public class Listener extends UntypedActor{
                                     
                                     break; 
                             }
-                        
+                            } else{
+                                getSender().tell(new PlayGame(),getSelf());
+                            }
                         }
                         
                         if ((destinofila-1==3)&&(destcol==7)){
+                            if ((getPiezaTablero(origenfila-1,origcol).charAt(1))!= 'R'){
                               switch(m.getColor().charAt(0)){
                                 case 'B':
                                     if (!tronosB.contains(getPiezaTablero(destinofila-1, destcol).charAt(1))){
@@ -529,6 +540,9 @@ public class Listener extends UntypedActor{
                                     getSender().tell(vm4,getSelf());
                                     
                                     break; 
+                            }
+                            } else{
+                                getSender().tell(new PlayGame(),getSelf());
                             }
                         }
                             tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
