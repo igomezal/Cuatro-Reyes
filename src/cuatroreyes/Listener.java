@@ -70,6 +70,12 @@ public class Listener extends UntypedActor{
         tablero[4][0] = "  ";
         tablero[5][1] = "  ";
         tablero[4][2] = "PV";
+        tablero[6][2] = "PB";
+        tablero[6][6] = "PN";
+        tablero[6][7] = "  ";
+        tablero[1][5] = "PV";
+        tablero[1][1] = "PR";
+        tablero[1][0] = "  ";
         //Fin entradas de testing
     }
     
@@ -203,8 +209,150 @@ public class Listener extends UntypedActor{
             char color = getColorFromPos(origfila, origcol);
             char pieza = getPiezaFromPos(origfila, origcol);
             System.out.println(pieza+"   "+color);
+            
+            switch(pieza){
+                case 'P':{
+                    switch(color){
+                        case 'B':{
+                            if(origcol == destcol){
+                                if(origfila == (destfila-1)){
+                                    if(destVacio(destfila, destcol)){
+                                        //System.out.println("Mov peon blanco correcto");
+                                        correcto = true;
+                                    }
+                                }else{
 
-            switch(color){
+                                }
+                            }else{
+                                if(origcol == destcol+1 || origcol == destcol-1){
+                                    if(!destVacio(destfila, destcol)){
+                                        correcto = true;
+                                    }
+                                }
+                            }
+                            if(correcto){
+                                if((destfila == 7) && (destcol == 2)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EB";//Cambio el origen para que luego lo mueva, porque no puede cambiarse el destino aqui
+                                }
+                                if((destfila == 7) && (destcol == 1)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CB";
+                                }
+                            }
+                        break;
+                        }
+                        case 'N':{
+                            if(origfila == destfila){
+                                if(origcol == (destcol-1)){
+                                    if(destVacio(destfila, destcol)){
+                                        //System.out.println("Mov peon Negro correcto");
+                                        correcto = true;
+                                    }
+                                }else{
+                                    //System.out.println("Else de columnas distintas");
+                                }
+                            }else{
+                                if(origfila == destfila+1 || origfila == destfila-1){
+                                    if(!destVacio(destfila, destcol)){
+                                        //System.out.println("Peon negro ha comido");
+                                        correcto = true;
+                                    }
+                                }
+                            }
+                            if(correcto){
+                                if((destfila == 5) && (destcol == 7)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EN";
+                                }
+                                if((destfila == 6) && (destcol == 7)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CN";
+                                }
+                            }
+                        break;}
+                        case 'V':{
+                            if(origcol == destcol){
+                                if(origfila == (destfila+1)){
+                                    if(destVacio(destfila, destcol)){
+                                        //System.out.println("Mov peon verde correcto");
+                                        correcto = true;
+                                    }
+                                }else{
+
+                                }
+                            }else{
+                                if(origcol == destcol+1 || origcol == destcol-1){
+                                    if(!destVacio(destfila, destcol)){
+                                        //System.out.println("Peon verde ha comido");
+                                        correcto = true;
+                                    }
+                                }
+                            }
+                            if(correcto){
+                                if((destfila == 0) && (destcol == 5)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EV";
+                                }
+                                if((destfila == 0) && (destcol == 6)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CV";
+                                }
+                            }
+                        break;
+                        }
+                        case 'R':{
+                            if(origfila == destfila){
+                                if(origcol == (destcol+1)){
+                                    if(destVacio(destfila, destcol)){
+                                        //System.out.println("Mov peon rojo correcto");
+                                        correcto = true;
+                                    }
+                                }else{
+
+                                }
+                            }else{
+                                if(origfila == destfila+1 || origfila == destfila-1){
+                                    if(!destVacio(destfila, destcol)){
+                                        //System.out.println("Peon rojo ha comido");
+                                        correcto = true;
+                                    }
+                                }
+                            }
+                            if(correcto){
+                                if((destfila == 2) && (destcol == 0)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "ER";
+                                }
+                                if((destfila == 1) && (destcol == 0)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CR";
+                                }
+                            }
+                        break;
+                        }
+                    }
+                }break;
+                case 'R':{
+                    correcto = movRey(origfila, origcol, destfila, destcol);
+                    break;
+                }
+                case 'C':{
+                    correcto = movCaballo(origfila, origcol, destfila, destcol);
+                    break;
+                }
+                case 'E':{
+                    correcto = movElefante(origfila, origcol, destfila, destcol);
+                    break;
+                }
+                case 'B':{
+                    correcto = movBarco(origfila, origcol, destfila, destcol);
+                    break;
+                }
+                default:System.out.println("CHECK!!");
+            }
+
+            /*switch(color){
                 case 'B':{/////////////////////////////////////BLANCO
                     switch(pieza){
                         case 'P':{//Peon
@@ -224,6 +372,17 @@ public class Listener extends UntypedActor{
                                     }
                                 }
                             }
+                            if(correcto){
+                                if((destfila == 7) && (destcol == 2)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EB";//Cambio el origen para que luego lo mueva, porque no puede cambiarse el destino aqui
+                                }
+                                if((destfila == 7) && (destcol == 1)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CB";
+                                }
+                            }
+                                
                         }break;
                         case 'R':{
                             correcto = movRey(origfila, origcol, destfila, destcol);
@@ -262,6 +421,16 @@ public class Listener extends UntypedActor{
                                         //System.out.println("Peon negro ha comido");
                                         correcto = true;
                                     }
+                                }
+                            }
+                            if(correcto){
+                                if((destfila == 5) && (destcol == 7)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EN";
+                                }
+                                if((destfila == 6) && (destcol == 7)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CN";
                                 }
                             }
                         }break;
@@ -304,6 +473,16 @@ public class Listener extends UntypedActor{
                                     }
                                 }
                             }
+                            if(correcto){
+                                if((destfila == 0) && (destcol == 5)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "EV";
+                                }
+                                if((destfila == 0) && (destcol == 6)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CV";
+                                }
+                            }
                         }break;
                         case 'R':{
                             correcto = movRey(origfila, origcol, destfila, destcol);
@@ -344,6 +523,16 @@ public class Listener extends UntypedActor{
                                     }
                                 }
                             }
+                            if(correcto){
+                                if((destfila == 2) && (destcol == 0)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a ELEFANTE"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "ER";
+                                }
+                                if((destfila == 1) && (destcol == 0)){
+                                    System.out.println(ANSI_GREEN+"Peon promocionado a CABALLO"+ANSI_RESET);
+                                    tablero[origfila][origcol] = "CR";
+                                }
+                            }
                         }break;
                         case 'R':{
                             correcto = movRey(origfila, origcol, destfila, destcol);
@@ -365,7 +554,7 @@ public class Listener extends UntypedActor{
                 }break;
 
                 default:System.out.println("DEFAULT!!! CHECK");
-            }
+            }*/
             if (correcto){
                 tablero[destfila][destcol] = getPiezaTablero(origfila, origcol);
                 tablero[origfila][origcol] = "  ";
