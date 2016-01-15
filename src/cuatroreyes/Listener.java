@@ -172,6 +172,7 @@ public class Listener extends UntypedActor{
                    
                     
                     if ((getPiezaTablero(origenfila-1, origcol).charAt(0)=='R')&&(getPiezaTablero(destinofila-1, destcol).charAt(1)!=m.getColor().charAt(0))){
+                        if(((destinofila-1==4)&&(destcol==0))||((destinofila-1==7)&&(destcol==4))||((destinofila-1==0)&&(destcol==3))||((destinofila-1==3)&&(destcol==7))){
                         if ((destinofila-1==4)&&(destcol==0)){
                             switch(m.getColor().charAt(0)){
                                 case 'B':
@@ -260,6 +261,7 @@ public class Listener extends UntypedActor{
                                     break; 
                             }
                         }
+                        
                         if ((destinofila-1==7)&&(destcol==4)){
                              switch(m.getColor().charAt(0)){
                                 case 'B':
@@ -348,7 +350,8 @@ public class Listener extends UntypedActor{
                                     break; 
                             }
                             
-                        }   
+                        }
+                           
                         if ((destinofila-1==0)&&(destcol==3)){
                              switch(m.getColor().charAt(0)){
                                 case 'B':
@@ -438,6 +441,7 @@ public class Listener extends UntypedActor{
                             }
                         
                         }
+                        
                         if ((destinofila-1==3)&&(destcol==7)){
                               switch(m.getColor().charAt(0)){
                                 case 'B':
@@ -526,14 +530,16 @@ public class Listener extends UntypedActor{
                                     
                                     break; 
                             }
-                          
-                            
                         }
-                        
-                        tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
-                        tablero[origenfila-1][origcol] = "  ";
-                        tableroActual();
-                        
+                            tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
+                            tablero[origenfila-1][origcol] = "  ";
+                            tableroActual();  
+                        }else{
+                            tablero[destinofila-1][destcol] = getPiezaTablero(origenfila-1, origcol);
+                            tablero[origenfila-1][origcol] = "  ";
+                            tableroActual();  
+                            getSender().tell(new PlayGame(),getSelf());
+                        } 
                     } 
                     else{
                     mostrarPuntuaciones();
