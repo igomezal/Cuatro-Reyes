@@ -16,6 +16,7 @@ public class Listener extends UntypedActor{
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
+    private int[] puntuacion;
     
     public Listener(){
         //Inicializamos tablero con los valores del tablero inicial
@@ -65,17 +66,10 @@ public class Listener extends UntypedActor{
         
         //Las siguientes entradas en el tablero son para testing, para no tirarme 4 turnos de cada color
         //para llegar a una situación que quiero. No deben aparecer en la versión final, obviamente
-        tablero[1][2] = "  ";
-        tablero[2][3] = "PB";
-        tablero[4][0] = "  ";
-        tablero[5][1] = "  ";
-        tablero[4][2] = "PV";
-        tablero[6][2] = "PB";
-        tablero[6][6] = "PN";
-        tablero[6][7] = "  ";
-        tablero[1][5] = "PV";
-        tablero[1][1] = "PR";
-        tablero[1][0] = "  ";
+        tablero[3][3] = "BV";
+        tablero[3][4] = "BR";
+        tablero[4][3] = "BN";
+        tablero[2][2] = "BB";        
         //Fin entradas de testing
     }
     
@@ -379,6 +373,7 @@ public class Listener extends UntypedActor{
                 }
                 case 'B':{
                     correcto = movBarco(origfila, origcol, destfila, destcol);
+                    victoriaNaval(origfila, origcol, destfila, destcol);
                     break;
                 }
                 default:System.out.println("CHECK!!");
@@ -692,9 +687,56 @@ public class Listener extends UntypedActor{
         return movBarco;
     }
     
-    public boolean victoriaNaval(int destfila, int destcol){
+    public boolean victoriaNaval(int origfila, int origcol, int destfila, int destcol){
         boolean victoria = false;
-        
+        if(getPiezaFromPos(destfila+1, destcol+1) == 'B'){
+            if(getPiezaFromPos(destfila+1, destcol) == 'B'){
+                if(getPiezaFromPos(destfila, destcol+1) == 'B'){
+                    tablero[destfila+1][destcol+1]="  ";
+                    tablero[destfila+1][destcol]="  ";
+                    tablero[destfila][destcol+1]="  ";
+                    System.out.println(ANSI_GREEN+"Victoria naval"+ANSI_RESET);
+                    //comer(6,getColorFromPos(origfila, origcol));
+                    victoria=true;
+                }
+            }
+        }
+        if(getPiezaFromPos(destfila-1, destcol+1) == 'B'){
+            if(getPiezaFromPos(destfila, destcol+1)== 'B'){
+                if(getPiezaFromPos(destfila-1, destcol)=='B'){
+                    tablero[destfila-1][destcol+1]="  ";
+                    tablero[destfila][destcol+1]="  ";
+                    tablero[destfila-1][destcol]="  ";
+                    System.out.println(ANSI_GREEN+"Victoria naval"+ANSI_RESET);
+                    //comer(6,getColorFromPos(origfila, origcol));
+                    victoria = true;
+                }
+            }
+        }
+        if(getPiezaFromPos(destfila-1, destcol-1)=='B'){
+            if(getPiezaFromPos(destfila-1, destcol)=='B'){
+                if(getPiezaFromPos(destfila, destcol-1)=='B'){
+                    tablero[destfila-1][destcol-1]="  ";
+                    tablero[destfila-1][destcol]="  ";
+                    tablero[destfila][destcol-1]="  ";
+                    System.out.println(ANSI_GREEN+"Victoria naval"+ANSI_RESET);
+                    //comer(6,getColorFromPos(origfila, origcol));
+                    victoria = true;
+                }
+            }
+        }
+        if(getPiezaFromPos(destfila+1, destcol-1)=='B'){
+            if(getPiezaFromPos(destfila, destcol-1)=='B'){
+                if(getPiezaFromPos(destfila+1, destcol)=='B'){
+                    tablero[destfila+1][destcol-1]="  ";
+                    tablero[destfila][destcol-1]="  ";
+                    tablero[destfila+1][destcol]="  ";
+                    System.out.println(ANSI_GREEN+"Victoria naval"+ANSI_RESET);
+                    //comer(6,getColorFromPos(origfila, origcol));
+                    victoria = true;
+                }
+            }
+        }
         return victoria;
     }
     
